@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Ghost from "@/assets/ghost.svg";
 import FooterBar from "@/components/FooterBar";
 
@@ -155,7 +155,6 @@ export default function MakeCustomAIPage() {
           </button>
         </form>
       </main>
-
       <FooterBar />
     </div>
   );

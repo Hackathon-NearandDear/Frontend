@@ -1,10 +1,13 @@
-import React from "react";
+import Link from "next/link";
 
 const FooterBar = () => {
   return (
     <footer className="bg-white border-t">
       <div className="flex justify-around p-4 max-w-md mx-auto">
-        <button className="text-gray-600 hover:text-blue-500 transition">
+        <Link
+          href="/home"
+          className="text-gray-600 hover:text-blue-500 transition"
+        >
           <svg
             className="w-6 h-6"
             fill="none"
@@ -19,8 +22,11 @@ const FooterBar = () => {
               d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
             />
           </svg>
-        </button>
-        <button className="text-gray-600 hover:text-blue-500 transition">
+        </Link>
+        <Link
+          href="/list"
+          className="text-gray-600 hover:text-blue-500 transition"
+        >
           <svg
             className="w-6 h-6"
             fill="none"
@@ -35,8 +41,11 @@ const FooterBar = () => {
               d="M4 6h16M4 12h16M4 18h16"
             />
           </svg>
-        </button>
-        <button className="text-gray-600 hover:text-blue-500 transition">
+        </Link>
+        <Link
+          href="/chatlist"
+          className="text-gray-600 hover:text-blue-500 transition"
+        >
           <svg
             className="w-6 h-6"
             fill="none"
@@ -51,8 +60,11 @@ const FooterBar = () => {
               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
             />
           </svg>
-        </button>
-        <button className="text-gray-600 hover:text-blue-500 transition">
+        </Link>
+        <Link
+          href="/setting"
+          className="text-gray-600 hover:text-blue-500 transition"
+        >
           <svg
             className="w-6 h-6"
             fill="none"
@@ -73,7 +85,7 @@ const FooterBar = () => {
               d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
             />
           </svg>
-        </button>
+        </Link>
       </div>
     </footer>
   );

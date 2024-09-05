@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import AICard from "@/components/AICard";
 import Ghost from "@/assets/ghost.svg";
 import FooterBar from "@/components/FooterBar";
+import Link from "next/link";
 
 export default function HomePage() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -80,13 +81,15 @@ export default function HomePage() {
           <h2 className="text-3xl font-bold text-center">
             Looking for anything else?
           </h2>
-          <button className="w-full max-w-md bg-gray-800 text-white py-3 rounded-lg text-base font-semibold hover:bg-blue-600 transition">
+          <Link
+            href="/make"
+            className="w-full max-w-md bg-gray-800 text-white py-3 rounded-lg text-base font-semibold hover:bg-blue-600 transition flex items-center justify-center"
+          >
             Make your Custom AI!
-          </button>
+          </Link>
         </div>
       </main>
-
       <FooterBar />
-    </div>
+      </div>
   );
 }
