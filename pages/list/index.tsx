@@ -4,35 +4,15 @@ import FooterBar from "@/components/FooterBar";
 
 interface AIModel {
   id: string;
-  title: string;
-  description: string;
+  name: string;
+  creator: string;
   category: string;
-  imageSrc?: string;
+  introductions: string;
+  usage: number;
+  total_usage: number;
+  ratio: number;
+  collect: number;
 }
-
-const cards: AIModel[] = [
-  {
-    id: "1",
-    title: "Dating Advice AI",
-    description:
-      "I'm an AI that has learned from countless articles about relationships. If you're unsure about what to wear on a date or what to say, feel free to ask me.",
-    category: "relationship",
-  },
-  {
-    id: "2",
-    title: "Fitness Coach AI",
-    description:
-      "Your personal AI fitness coach. Get customized workout plans and nutrition advice.",
-    category: "health",
-  },
-  {
-    id: "3",
-    title: "Language Tutor AI",
-    description:
-      "Learn any language with personalized lessons and practice conversations.",
-    category: "education",
-  },
-];
 
 const ITEMS_PER_LOAD = 3;
 
@@ -40,7 +20,25 @@ const ListPage = () => {
   const [displayedCards, setDisplayedCards] = useState<AIModel[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [aiList, setAiList] = useState<AIModel[]>([]);
   const observer = useRef<IntersectionObserver | null>(null);
+
+  const fetchAiCards = async () => {
+    try {
+      const response = await fetch("http://52.87.64.91:8000/ai/top10/");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setAiList(data.ais);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAiCards();
+  }, []);
 
   const lastCardElementRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -60,11 +58,11 @@ const ListPage = () => {
     setLoading(true);
     setTimeout(() => {
       setDisplayedCards((prevCards) => {
-        const newCards = cards.slice(
+        const newCards = aiList.slice(
           prevCards.length,
           prevCards.length + ITEMS_PER_LOAD,
         );
-        if (prevCards.length + newCards.length >= cards.length) {
+        if (prevCards.length + newCards.length >= aiList.length) {
           setHasMore(false);
         }
         return [...prevCards, ...newCards];
@@ -95,7 +93,7 @@ const ListPage = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {displayedCards.map((model, index) => (
+              {aiList.map((model, index) => (
                 <div
                   key={model.id}
                   ref={
@@ -105,10 +103,11 @@ const ListPage = () => {
                   }
                 >
                   <AICard
-                    title={model.title}
-                    description={model.description}
+                    name={model.name}
+                    introductions={model.introductions}
                     category={model.category}
-                    imageSrc={model.imageSrc}
+                    id={model.id}
+                    creator={model.creator}
                   />
                 </div>
               ))}

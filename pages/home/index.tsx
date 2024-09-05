@@ -1,39 +1,55 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AICard from "@/components/AICard";
 import Ghost from "@/assets/ghost.svg";
 import FooterBar from "@/components/FooterBar";
 import Link from "next/link";
 
+interface AICardData {
+  id: string;
+  name: string;
+  creator: string;
+  category: string;
+  introductions: string;
+  usage: number;
+  total_usage: number;
+  ratio: number;
+  collect: number;
+}
+
 export default function HomePage() {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const cards = [
-    {
-      title: "Dating Advice AI",
-      description:
-        "I'm an AI that has learned from countless articles about relationships. If you're unsure about what to wear on a date or what to say, feel free to ask me.",
-      category: "relationship",
-    },
-    {
-      title: "Fitness Coach AI",
-      description:
-        "Your personal AI fitness coach. Get customized workout plans and nutrition advice.",
-      category: "health",
-    },
-    {
-      title: "Language Tutor AI",
-      description:
-        "Learn any language with personalized lessons and practice conversations.",
-      category: "education",
-    },
-  ];
+  const [aiCards, setAiCards] = useState<AICardData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAiCards = async () => {
+    try {
+      const response = await fetch("http://52.87.64.91:8000/ai/top10/");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setAiCards(data.ais);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unknown error occurred",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAiCards();
+  }, []);
 
   const nextCard = () => {
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % cards.length);
+    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % aiCards.length);
   };
 
   const prevCard = () => {
     setCurrentCardIndex(
-      (prevIndex) => (prevIndex - 1 + cards.length) % cards.length,
+      (prevIndex) => (prevIndex - 1 + aiCards.length) % aiCards.length,
     );
   };
 
@@ -55,25 +71,41 @@ export default function HomePage() {
           </div>
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-lg font-bold">Trending AIs</h3>
-            <button className="bg-gray-800 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition">
+            <Link href='/list' className="bg-gray-800 text-white py-2 px-4 rounded-lg text-sm font-medium hover:bg-gray-700 transition">
               Explore
-            </button>
+            </Link>
           </div>
 
           <div className="relative h-[250px]">
-            <AICard {...cards[currentCardIndex]} />
-            <button
-              onClick={prevCard}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10"
-            >
-              &#10094;
-            </button>
-            <button
-              onClick={nextCard}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10"
-            >
-              &#10095;
-            </button>
+            {isLoading ? (
+              <p>Loading...</p>
+            ) : error ? (
+              <p>Error: {error}</p>
+            ) : aiCards.length > 0 ? (
+              <>
+                <AICard
+                  id={aiCards[currentCardIndex].id}
+                  name={aiCards[currentCardIndex].name}
+                  creator={aiCards[currentCardIndex].creator}
+                  category={aiCards[currentCardIndex].category}
+                  introductions={aiCards[currentCardIndex].introductions}
+                />
+                <button
+                  onClick={prevCard}
+                  className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10"
+                >
+                  &#10094;
+                </button>
+                <button
+                  onClick={nextCard}
+                  className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full shadow-md z-10"
+                >
+                  &#10095;
+                </button>
+              </>
+            ) : (
+              <p>No AI cards available</p>
+            )}
           </div>
         </div>
 
@@ -90,6 +122,6 @@ export default function HomePage() {
         </div>
       </main>
       <FooterBar />
-      </div>
+    </div>
   );
 }
