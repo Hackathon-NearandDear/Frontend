@@ -7,6 +7,7 @@ import avatarImage from "@/assets/avatar.png";
 interface Message {
   role: "user" | "ai";
   content: string;
+  timestamp: string;
 }
 
 interface ChatResponse {
@@ -36,14 +37,6 @@ const AIChat: React.FC = () => {
     return "AI Assistant";
   }, [id]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
   const chatid = useMemo(() => {
     if (user && id) {
       return `${user.userid}_${id}`;
@@ -51,14 +44,66 @@ const AIChat: React.FC = () => {
     return null;
   }, [user, id]);
 
-  const sendMessage = async (content: string): Promise<ChatResponse> => {
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    if (chatid) {
+      fetchChatHistory();
+    }
+  }, [chatid]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const fetchChatHistory = async () => {
+    if (!chatid) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/chatcontents/${chatid}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          // Chat history not found, send welcome message
+          const welcomeMessage: Message = {
+            role: "ai",
+            content: "Hello! How can I assist you?",
+            timestamp: new Date().toISOString(),
+          };
+          setMessages([welcomeMessage]);
+          await sendMessage(welcomeMessage.content, aiName);
+        } else {
+          throw new Error("Failed to fetch chat history");
+        }
+      } else {
+        const data = await response.json();
+        const formattedMessages: Message[] = data.chats.map(
+          (chat: ChatResponse) => ({
+            role: chat.senderid === user?.userid ? "user" : "ai",
+            content: chat.message,
+            timestamp: chat.createdat,
+          }),
+        );
+        setMessages(formattedMessages);
+      }
+    } catch (error) {
+      console.error("Error fetching chat history:", error);
+      // You might want to show an error message to the user here
+    }
+  };
+
+  const sendMessage = async (
+    content: string,
+    sender: string,
+  ): Promise<ChatResponse> => {
     const response = await fetch(`${API_BASE_URL}/chatcontent/${chatid}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        senderid: user?.userid,
+        senderid: sender,
         message: content,
       }),
     });
@@ -73,14 +118,22 @@ const AIChat: React.FC = () => {
   const handleSendMessage = async () => {
     if (!input.trim() || !user) return;
 
-    const userMessage: Message = { role: "user", content: input };
+    const userMessage: Message = {
+      role: "user",
+      content: input,
+      timestamp: new Date().toISOString(),
+    };
     setMessages((prevMessages) => [...prevMessages, userMessage]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const response = await sendMessage(input);
-      const aiMessage: Message = { role: "ai", content: response.message };
+      const response = await sendMessage(input, user.userid);
+      const aiMessage: Message = {
+        role: "ai",
+        content: response.message,
+        timestamp: response.createdat,
+      };
       setMessages((prevMessages) => [...prevMessages, aiMessage]);
     } catch (error) {
       console.error("Error sending message:", error);
