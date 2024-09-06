@@ -2,7 +2,7 @@ import Link from "next/link";
 
 const FooterBar = () => {
   return (
-    <footer className="bg-white border-t">
+    <footer className="bg-white border-t w-full">
       <div className="flex justify-around p-4 max-w-md mx-auto">
         <Link
           href="/home"
@@ -24,7 +24,7 @@ const FooterBar = () => {
           </svg>
         </Link>
         <Link
-          href="/list"
+          href="/ai"
           className="text-gray-600 hover:text-blue-500 transition"
         >
           <svg

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import avatarImage from "@/assets/avatar.png";
 
 interface AICardProps {
@@ -45,9 +46,11 @@ const AICard: React.FC<AICardProps> = ({
       </div>
 
       <div className="flex justify-end space-x-2 mt-auto">
-        <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-          Docs
-        </button>
+        <Link href={`/ai/${id}/docs`} passHref>
+          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+            Docs
+          </button>
+        </Link>
         <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
           Chat!
         </button>
