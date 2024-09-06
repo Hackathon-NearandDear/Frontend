@@ -88,7 +88,7 @@ export default function Login() {
 
       // Set user in Zustand store
       setUser({ address, ...userData });
-
+      console.log("User logged in:", userData);
       router.push("/home");
     } catch (error) {
       console.error("Error during login:", error);

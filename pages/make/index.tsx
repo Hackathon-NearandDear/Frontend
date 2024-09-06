@@ -1,3 +1,5 @@
+import { UserState, useUserStore } from "@/store/userStore";
+import { useRouter } from "next/router";
 import { useState } from "react";
 
 const categories: string[] = [
@@ -10,28 +12,74 @@ const categories: string[] = [
   "Graphics & Design",
 ];
 
+const API_BASE_URL = "http://52.87.64.91:8000";
+
 export default function MakeCustomAIPage() {
   const [name, setName] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [introduction, setIntroduction] = useState("");
   const [content, setContent] = useState("");
   const [comments, setComments] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
+  const user = useUserStore((state: UserState) => state.user);
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category === selectedCategory ? "" : category);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Handle form submission logic here
-    console.log({
+    setError(null);
+    setIsLoading(true);
+
+    if (!user) {
+      setError("User not logged in");
+      setIsLoading(false);
+      return;
+    }
+
+    const payload = {
       name,
-      selectedCategory,
-      introduction,
-      content,
-      comments,
-    });
+      creator: user.name,
+      category: selectedCategory,
+      introductions: introduction,
+      contents: content,
+      logs: comments,
+    };
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/ai/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      // Log the response for debugging
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error('Error response:', errorData);
+        throw new Error(`Failed to create AI: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("AI created successfully:", data);
+      router.push("/home");
+    } catch (err) {
+      console.error('Error in API call:', err);
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsLoading(false);
+    }
   };
+
 
   return (
     <div className="flex-grow p-2 max-w-2xl mx-auto w-full">
@@ -39,7 +87,6 @@ export default function MakeCustomAIPage() {
         onSubmit={handleSubmit}
         className="bg-white rounded-lg shadow-md p-6"
       >
-
         <div className="mb-4">
           <label
             htmlFor="name"
@@ -131,11 +178,14 @@ export default function MakeCustomAIPage() {
           />
         </div>
 
+        {error && <div className="mb-4 text-red-500 text-sm">{error}</div>}
+
         <button
           type="submit"
           className="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition duration-300"
+          disabled={isLoading}
         >
-          Create
+          {isLoading ? "Creating..." : "Create"}
         </button>
       </form>
     </div>

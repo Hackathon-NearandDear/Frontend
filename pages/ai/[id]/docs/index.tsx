@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { GetServerSideProps } from "next";
+import { fetchAILogs } from "@/utils/api/ai";
 
 interface Log {
   id: number;
@@ -24,27 +25,23 @@ const AIDocsPage: React.FC = () => {
   const { id } = router.query;
 
   useEffect(() => {
-    const fetchLogs = async () => {
-      if (!id) {
-        return;
-      }
+    const loadLogs = async () => {
+      if (typeof id !== "string") return;
 
       try {
-        const response = await fetch(`http://52.87.64.91:8000/ailogs/ai/${id}`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch logs");
-        }
-        const data = await response.json();
-        setLogs(data.logs);
-        setLoading(false);
+        setLoading(true);
+        const fetchedLogs = await fetchAILogs(id);
+        setLogs(fetchedLogs);
+        setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
         setLoading(false);
       }
     };
 
     if (id) {
-      fetchLogs();
+      loadLogs();
     }
   }, [id]);
 

@@ -7,3 +7,11 @@ export async function fetchTopAIs() {
   }
   return await response.json();
 }
+
+export async function fetchAILogs(id: string) {
+  const response = await fetch(`${API_BASE_URL}/ailogs/ai/${id}`);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return await response.json();
+}

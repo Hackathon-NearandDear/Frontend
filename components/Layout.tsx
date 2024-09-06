@@ -14,6 +14,10 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
       <Head>
         <title>{title} | Near and Dear</title>
         <meta name="description" content="AI Chat Application" />
+        <meta
+          http-equiv="Cross-Origin-Opener-Policy"
+          content="same-origin-allow-popups"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
