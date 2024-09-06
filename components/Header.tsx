@@ -9,7 +9,7 @@ const Header: React.FC<HeaderBarProps> = ({
   title,
 }) => {
   return (
-    <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between">
+    <header className="bg-white shadow-sm py-4 px-6 flex items-center justify-between border-b">
       <div className="flex items-center">
         <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
       </div>

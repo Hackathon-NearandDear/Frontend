@@ -16,10 +16,19 @@ export async function loginUser(address: string) {
   return await response.json();
 }
 
-// export async function fetchChatList(userid: string) {
-//   const response = await fetch(`${API_BASE_URL}/chats/${userid}`);
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch chat list");
-//   }
-//   return await response.json();
-// }
+export async function fetchChatList(userid: string) {
+  const response = await fetch(`${API_BASE_URL}/chats/${userid}`);
+  console.log("Response status:", response.status);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("Error response body:", errorText);
+    throw new Error(
+      `Failed to fetch chat list: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const data = await response.json();
+  console.log("Received data:", data);
+  return data;
+}

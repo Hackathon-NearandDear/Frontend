@@ -21,7 +21,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="w-full max-w-[800px] flex flex-col h-screen">
+      <div className="w-full max-w-[600px] flex flex-col h-screen">
         <Header title={title} />
 
         <main className="flex-grow overflow-y-auto px-4">{children}</main>
