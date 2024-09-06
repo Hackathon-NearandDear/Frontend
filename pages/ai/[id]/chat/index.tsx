@@ -9,6 +9,16 @@ interface Message {
   content: string;
 }
 
+interface ChatResponse {
+  chatcontentsid: string;
+  chatid: string;
+  createdat: string;
+  senderid: string;
+  message: string;
+}
+
+const API_BASE_URL = "http://52.87.64.91:8000";
+
 const AIChat: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -22,17 +32,9 @@ const AIChat: React.FC = () => {
     if (typeof id === "string") {
       const parts = id.split("_");
       return parts.length > 2 ? parts[parts.length - 1] : parts[1];
-      //ai 이름에 언더바 있는 경우 예외 처리
     }
     return "AI Assistant";
   }, [id]);
-
-  useEffect(() => {
-    if (id && user) {
-      initializeChat();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id, user]);
 
   useEffect(() => {
     scrollToBottom();
@@ -42,38 +44,57 @@ const AIChat: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  const initializeChat = async () => {
-    if (typeof id !== "string" || !user) return;
+  const chatid = useMemo(() => {
+    if (user && id) {
+      return `${user.userid}_${id}`;
+    }
+    return null;
+  }, [user, id]);
 
+  const sendMessage = async (content: string): Promise<ChatResponse> => {
+    const response = await fetch(`${API_BASE_URL}/chatcontent/${chatid}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        senderid: user?.userid,
+        message: content,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to send message");
+    }
+
+    return response.json();
+  };
+
+  const handleSendMessage = async () => {
+    if (!input.trim() || !user) return;
+
+    const userMessage: Message = { role: "user", content: input };
+    setMessages((prevMessages) => [...prevMessages, userMessage]);
+    setInput("");
     setIsLoading(true);
+
     try {
-      // const response = await fetchChatSession(id, user.userid);
-      setMessages([
-        { role: "ai", content: "Hello! How can I assist you today?" },
-      ]);
+      const response = await sendMessage(input);
+      const aiMessage: Message = { role: "ai", content: response.message };
+      setMessages((prevMessages) => [...prevMessages, aiMessage]);
     } catch (error) {
-      console.error("Error initializing chat:", error);
+      console.error("Error sending message:", error);
+      // You might want to show an error message to the user here
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSendMessage = async () => {
-    if (!input.trim()) return;
-
-    const userMessage: Message = { role: "user", content: input };
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput("");
-
-    setIsLoading(true);
-    setTimeout(() => {
-      const aiMessage: Message = {
-        role: "ai",
-        content: "This is a simulated response.",
-      };
-      setMessages((prevMessages) => [...prevMessages, aiMessage]);
-      setIsLoading(false);
-    }, 1000);
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      handleSendMessage();
+    }
   };
 
   return (
@@ -140,9 +161,9 @@ const AIChat: React.FC = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Type your message..."
             className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           />
           <button
             onClick={handleSendMessage}

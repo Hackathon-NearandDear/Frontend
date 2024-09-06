@@ -2,7 +2,6 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import avatarImage from "@/assets/avatar.png";
 import { useUserStore } from "@/store/userStore";
-import { createChat } from "@/utils/api/chat";
 
 interface ChatCardProps {
   chatid?: string;
@@ -30,14 +29,8 @@ const ChatCard: React.FC<ChatCardProps> = ({
     }
 
     try {
-      if (chatid) {
-        // If chatid exists, navigate to the existing chat
-        router.push(`/ai/${aiid}/chat`);
-      } else {
-        // If chatid doesn't exist, create a new chat
-        const newChat = await createChat({ aiid, userid: user.userid });
-        router.push(`/chat/${newChat.chatid}`);
-      }
+      // If chatid exists, navigate to the existing chat
+      router.push(`/ai/${aiid}/chat`);
     } catch (error) {
       console.error("Error handling chat click:", error);
       // You might want to show an error message to the user
