@@ -27,14 +27,6 @@ const ChatListPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const { user } = useUserStore();
 
-  const fetchDetails = async (aiid: string): Promise<AIDetails> => {
-    const response = await fetchAIDetails(aiid);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch AI details for ${aiid}`);
-    }
-    return await response.json();
-  };
-
   useEffect(() => {
     const fetchChatsAndDetails = async () => {
       if (!user || !user.userid) {
@@ -107,6 +99,8 @@ const ChatListPage: React.FC = () => {
         {chats.map((chat, index) => (
           <ChatCard
             key={`${chat.chatid}-${index}`}
+            chatid={chat.chatid}
+            aiid={chat.aiid}
             title={chat.aiDetails?.name || "Unknown AI"}
             category={chat.aiDetails?.category || "Unknown Category"}
           />

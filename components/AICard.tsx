@@ -1,6 +1,10 @@
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import avatarImage from "@/assets/avatar.png";
+import { useUserStore } from "@/store/userStore";
+import { createChat } from "@/utils/api/chat";
 
 interface AICardProps {
   id: string;
@@ -10,6 +14,7 @@ interface AICardProps {
   introductions: string;
   imageSrc?: string;
 }
+
 const getCreatorName = (address: string): string => {
   return address.slice(0, 6);
 };
@@ -22,6 +27,28 @@ const AICard: React.FC<AICardProps> = ({
   introductions,
   imageSrc,
 }) => {
+  const router = useRouter();
+  const { user } = useUserStore();
+
+  const handleChatClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!user) {
+      console.error("User is not logged in");
+      return;
+    }
+
+    try {
+      {
+        // If chat doesn't exist, create a new one
+        const newChat = await createChat({ aiid: id, userid: user.userid });
+        router.push(`/ai/${newChat.chatid}/chat`);
+      }
+    } catch (error) {
+      console.error("Error handling chat click:", error);
+      router.push(`/ai/${id}/chat`);
+    }
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-4 h-full flex flex-col">
       <div className="flex mb-4 flex-grow">
@@ -47,18 +74,18 @@ const AICard: React.FC<AICardProps> = ({
           <p className="text-gray-600 line-clamp-3">{introductions}</p>
         </div>
       </div>
-
       <div className="flex justify-end space-x-2 mt-auto">
         <Link href={`/ai/${id}/docs`} passHref>
           <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
             Docs
           </button>
         </Link>
-        <Link href={`/ai/${id}/chat`} passHref>
-          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-            Chat!
-          </button>
-        </Link>
+        <button
+          onClick={handleChatClick}
+          className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition"
+        >
+          Chat!
+        </button>
       </div>
     </div>
   );

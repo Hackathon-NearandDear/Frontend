@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/router";
 import { useUserStore } from "@/store/userStore";
 import Image from "next/image";
@@ -19,17 +19,19 @@ const AIChat: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const aiName = useMemo(() => {
-    if (typeof id === 'string') {
-      const parts = id.split('_');
-      return parts.length > 1 ? parts[1] : id;
+    if (typeof id === "string") {
+      const parts = id.split("_");
+      return parts.length > 2 ? parts[parts.length - 1] : parts[1];
+      //ai 이름에 언더바 있는 경우 예외 처리
     }
-    return 'AI Assistant';
+    return "AI Assistant";
   }, [id]);
 
   useEffect(() => {
     if (id && user) {
       initializeChat();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, user]);
 
   useEffect(() => {
@@ -140,7 +142,7 @@ const AIChat: React.FC = () => {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..."
             className="flex-grow p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+            onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
           />
           <button
             onClick={handleSendMessage}
