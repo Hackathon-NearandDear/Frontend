@@ -10,6 +10,9 @@ interface AICardProps {
   introductions: string;
   imageSrc?: string;
 }
+const getCreatorName = (address: string): string => {
+  return address.slice(0, 6);
+};
 
 const AICard: React.FC<AICardProps> = ({
   id,
@@ -38,7 +41,7 @@ const AICard: React.FC<AICardProps> = ({
               {category}
             </span>
             <span className="inline-block bg-gray-500 text-white text-xs font-medium px-2 py-1 rounded mb-2">
-              {creator}
+              {getCreatorName(creator)}
             </span>
           </div>
           <p className="text-gray-600 line-clamp-3">{introductions}</p>
@@ -51,9 +54,11 @@ const AICard: React.FC<AICardProps> = ({
             Docs
           </button>
         </Link>
-        <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
-          Chat!
-        </button>
+        <Link href={`/ai/${id}/chat`} passHref>
+          <button className="bg-gray-800 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">
+            Chat!
+          </button>
+        </Link>
       </div>
     </div>
   );

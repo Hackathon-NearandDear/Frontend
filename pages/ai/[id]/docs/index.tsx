@@ -12,10 +12,6 @@ interface Log {
   faissid: string;
 }
 
-interface APIResponse {
-  logs: Log[];
-}
-
 const formatTime = (timeString: string) => {
   const [hours, minutes, seconds] = timeString.split(":");
   return `${hours}:${minutes}:${seconds.split(".")[0]}`;
@@ -112,10 +108,9 @@ const AIDocsPage: React.FC = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { id } = context.params as { id: string };
   return {
     props: {
-      title: `AI Docs: ${id}`,
+      title: `AI Docs`,
     },
   };
 };

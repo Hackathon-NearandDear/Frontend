@@ -42,7 +42,7 @@ export default function MakeCustomAIPage() {
 
     const payload = {
       name,
-      creator: user.name,
+      creator: user.address,
       category: selectedCategory,
       introductions: introduction,
       contents: content,

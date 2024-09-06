@@ -43,7 +43,7 @@ const FooterBar = () => {
           </svg>
         </Link>
         <Link
-          href="/chatlist"
+          href="/chat"
           className="text-gray-600 hover:text-blue-500 transition"
         >
           <svg

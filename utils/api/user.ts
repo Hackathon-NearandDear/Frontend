@@ -15,3 +15,11 @@ export async function loginUser(address: string) {
 
   return await response.json();
 }
+
+// export async function fetchChatList(userid: string) {
+//   const response = await fetch(`${API_BASE_URL}/chats/${userid}`);
+//   if (!response.ok) {
+//     throw new Error("Failed to fetch chat list");
+//   }
+//   return await response.json();
+// }
