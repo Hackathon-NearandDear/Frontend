@@ -14,7 +14,7 @@ import Web3 from "web3";
 import { loginUser } from "@/utils/api/user";
 
 const clientId =
-  "BKN-d92vzdSXsJatFKWlEOMwmbGSf5hoG-qYdjvHb7J_YT8gn0y5IzFOIszXGlaKMpppWa5VsVle59kmvhzfBD4";
+  "BF4DNPEx5g1IiuYGZyCeKDoqzpZuG_Lp_y_yNRk6LH0r1EJFawNJWipltHHxC5Jddn9vMnf2012JBDxMvVgihLo";
 
 export default function Login() {
   const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null);
