@@ -1,4 +1,5 @@
 import { UserState, useUserStore } from "@/store/userStore";
+import { createAI } from "@/utils/api/ai";
 import { useRouter } from "next/router";
 import { useState } from "react";
 
@@ -11,8 +12,6 @@ const categories: string[] = [
   "Developer tools",
   "Graphics & Design",
 ];
-
-const API_BASE_URL = "http://52.87.64.91:8000";
 
 export default function MakeCustomAIPage() {
   const [name, setName] = useState("");
@@ -51,35 +50,20 @@ export default function MakeCustomAIPage() {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/ai/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      // Log the response for debugging
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error('Error response:', errorData);
-        throw new Error(`Failed to create AI: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
+      const data = await createAI(payload);
       console.log("AI created successfully:", data);
       router.push("/home");
     } catch (err) {
-      console.error('Error in API call:', err);
-      setError(err instanceof Error ? err.message : "An error occurred");
+      console.error("Error creating AI:", err);
+      if (err instanceof Error && err.message.includes("400 Bad Request")) {
+        setError("이미 동일한 이름의 AI가 있습니다");
+      } else {
+        setError("AI 생성 중 오류가 발생했습니다");
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
 
   return (
     <div className="flex-grow p-2 max-w-2xl mx-auto w-full">
