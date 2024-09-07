@@ -38,8 +38,8 @@ const AIChat = () => {
   }, [id]);
 
   const chatid = useMemo(() => {
-    if (typeof id === "string") {
-      return id;
+    if (user && id) {
+      return `${user.userid}_${id}`;
     }
     return null;
   }, [id]);
