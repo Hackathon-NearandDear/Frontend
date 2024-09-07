@@ -20,7 +20,7 @@ interface ChatResponse {
 
 const API_BASE_URL = "http://52.87.64.91:8000";
 
-const AIChat: React.FC = () => {
+const AIChat = () => {
   const router = useRouter();
   const { id } = router.query;
   const [messages, setMessages] = useState<Message[]>([]);
@@ -38,11 +38,11 @@ const AIChat: React.FC = () => {
   }, [id]);
 
   const chatid = useMemo(() => {
-    if (user && id) {
-      return `${user.userid}_${id}`;
+    if (typeof id === "string") {
+      return id;
     }
     return null;
-  }, [user, id]);
+  }, [id]);
 
   useEffect(() => {
     scrollToBottom();
@@ -52,7 +52,7 @@ const AIChat: React.FC = () => {
     if (chatid) {
       fetchChatHistory();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatid]);
 
   const scrollToBottom = () => {
@@ -98,6 +98,9 @@ const AIChat: React.FC = () => {
     content: string,
     sender: string,
   ): Promise<ChatResponse> => {
+    if (!chatid) {
+      throw new Error("Chat ID is not available");
+    }
     const response = await fetch(`${API_BASE_URL}/chatcontent/${chatid}`, {
       method: "POST",
       headers: {
@@ -117,7 +120,7 @@ const AIChat: React.FC = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!input.trim() || !user) return;
+    if (!input.trim() || !user || !chatid) return;
 
     const userMessage: Message = {
       role: "user",
