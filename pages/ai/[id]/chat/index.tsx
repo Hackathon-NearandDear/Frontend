@@ -90,7 +90,6 @@ const AIChat = () => {
       }
     } catch (error) {
       console.error("Error fetching chat history:", error);
-      // You might want to show an error message to the user here
     }
   };
 
