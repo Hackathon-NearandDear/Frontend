@@ -112,7 +112,7 @@ const SettingsPage: React.FC = () => {
     setError(null);
     try {
       const response = await fetch(
-        `http://52.87.64.91:8000/ai/myais/${user.userid}`,
+        `http://13.54.180.217:8000/ai/myais/${user.userid}`,
       );
       if (!response.ok) {
         throw new Error("Failed to fetch AI profiles");
@@ -135,7 +135,7 @@ const SettingsPage: React.FC = () => {
   const handleDeleteAI = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this AI?")) {
       try {
-        const response = await fetch(`http://52.87.64.91:8000/ai/${id}`, {
+        const response = await fetch(`http://13.54.180.217:8000/ai/${id}`, {
           method: "DELETE",
         });
 

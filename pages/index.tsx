@@ -111,13 +111,13 @@ export default function Login() {
           Login with Google
         </button>
 
-        <button
+        {/* <button
           onClick={() => login("metamask")}
           className="w-full bg-white text-gray-800 font-semibold py-3 px-4 rounded-full mb-8 shadow-md hover:bg-gray-100 transition duration-300 ease-in-out flex items-center justify-center"
         >
           <Image src={metamask} alt="metamask" className="mr-4" width={24} />
           Login with Metamask
-        </button>
+        </button> */}
       </div>
     </div>
   );

@@ -41,7 +41,7 @@ export default function EditAIPage() {
 
   const fetchAIData = async () => {
     try {
-      const response = await fetch(`http://52.87.64.91:8000/ai/${id}`);
+      const response = await fetch(`http://13.54.180.217:8000/ai/${id}`);
       if (!response.ok) {
         throw new Error("Failed to fetch AI data");
       }
@@ -67,7 +67,7 @@ export default function EditAIPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`http://52.87.64.91:8000/ai/${id}`, {
+      const response = await fetch(`http://13.54.180.217:8000/ai/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

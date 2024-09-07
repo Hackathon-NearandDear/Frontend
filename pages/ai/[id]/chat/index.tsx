@@ -18,7 +18,7 @@ interface ChatResponse {
   message: string;
 }
 
-const API_BASE_URL = "http://52.87.64.91:8000";
+const API_BASE_URL = "http://13.54.180.217:8000";
 
 const AIChat = () => {
   const router = useRouter();

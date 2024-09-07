@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://52.87.64.91:8000";
+const API_BASE_URL = "http://13.54.180.217:8000";
 
 export async function createChat(chatData: { aiid: string; userid: string }) {
   const response = await fetch(`${API_BASE_URL}/chats/`, {
