@@ -11,26 +11,19 @@ interface AIProfile {
   category: string;
   introductions: string;
   image: string;
+  total_usage: number;
+  collect: number;
 }
-
-// Earnings interface
-interface Earnings {
-  tokens: number;
-  estimatedValue: number;
-}
-
-// Combined interface for AI with earnings
-interface AIWithEarnings extends AIProfile, Earnings {}
 
 // AIProfileCard Component
-const AIProfileCard: React.FC<AIWithEarnings & { onDelete: () => void }> = ({
+const AIProfileCard: React.FC<AIProfile & { onDelete: () => void }> = ({
   id,
   name,
   category,
   introductions,
   image,
-  tokens,
-  estimatedValue,
+  total_usage,
+  collect,
   onDelete,
 }) => {
   const router = useRouter();
@@ -54,7 +47,7 @@ const AIProfileCard: React.FC<AIWithEarnings & { onDelete: () => void }> = ({
         </button>
         <button
           onClick={onDelete}
-          className="bg-red-500 text-white px-4 py-2 w-full rounded-lg hover:bg-red-600 transition"
+          className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
         >
           Delete
         </button>
@@ -82,13 +75,11 @@ const AIProfileCard: React.FC<AIWithEarnings & { onDelete: () => void }> = ({
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm text-gray-600">Tokens</p>
-            <p className="text-xl font-bold">{tokens.toLocaleString()}</p>
+            <p className="text-xl font-bold">{total_usage.toLocaleString()}</p>
           </div>
           <div>
             <p className="text-sm text-gray-600">Estimated Value</p>
-            <p className="text-xl font-bold">
-              ${estimatedValue.toLocaleString()}
-            </p>
+            <p className="text-xl font-bold">${collect.toLocaleString()}</p>
           </div>
           <button
             onClick={handleCollectEarnings}
@@ -105,7 +96,7 @@ const AIProfileCard: React.FC<AIWithEarnings & { onDelete: () => void }> = ({
 // Main SettingsPage Component
 const SettingsPage: React.FC = () => {
   const { user } = useUserStore();
-  const [myAIs, setMyAIs] = useState<AIWithEarnings[]>([]);
+  const [myAIs, setMyAIs] = useState<AIProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -128,25 +119,11 @@ const SettingsPage: React.FC = () => {
       }
       const data = await response.json();
 
-      let aisWithEarnings: AIWithEarnings[];
-
-      if (Array.isArray(data)) {
-        aisWithEarnings = data.map((ai: AIProfile) => ({
-          ...ai,
-          tokens: Math.floor(Math.random() * 100000), // 임시 데이터
-          estimatedValue: Math.floor(Math.random() * 10000), // 임시 데이터
-        }));
-      } else if (data && Array.isArray(data.ais)) {
-        aisWithEarnings = data.ais.map((ai: AIProfile) => ({
-          ...ai,
-          tokens: Math.floor(Math.random() * 100000), // 임시 데이터
-          estimatedValue: Math.floor(Math.random() * 10000), // 임시 데이터
-        }));
+      if (data && Array.isArray(data.ais)) {
+        setMyAIs(data.ais);
       } else {
         throw new Error("Unexpected data format from API");
       }
-
-      setMyAIs(aisWithEarnings);
     } catch (error) {
       console.error("Error fetching AI profiles:", error);
       setError("Failed to load AI profiles. Please try again later.");
@@ -177,8 +154,6 @@ const SettingsPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 space-y-6">
-      <h1 className="text-2xl font-bold mb-4">Settings</h1>
-
       <section>
         <h2 className="text-xl font-semibold mb-2">My AIs and Earnings</h2>
         <p className="text-gray-600 mb-4">
