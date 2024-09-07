@@ -23,7 +23,7 @@ interface Earnings {
 interface AIWithEarnings extends AIProfile, Earnings {}
 
 // AIProfileCard Component
-const AIProfileCard: React.FC<AIWithEarnings> = ({
+const AIProfileCard: React.FC<AIWithEarnings & { onDelete: () => void }> = ({
   id,
   name,
   category,
@@ -31,6 +31,7 @@ const AIProfileCard: React.FC<AIWithEarnings> = ({
   image,
   tokens,
   estimatedValue,
+  onDelete,
 }) => {
   const router = useRouter();
 
@@ -44,6 +45,20 @@ const AIProfileCard: React.FC<AIWithEarnings> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
+      <div className="flex mb-2 space-x-2">
+        <button
+          onClick={handleEditClick}
+          className="bg-gray-100 text-gray-800 px-4 py-2 w-full rounded-lg hover:bg-gray-200 transition"
+        >
+          Edit
+        </button>
+        <button
+          onClick={onDelete}
+          className="bg-red-500 text-white px-4 py-2 w-full rounded-lg hover:bg-red-600 transition"
+        >
+          Delete
+        </button>
+      </div>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <Image
@@ -60,12 +75,6 @@ const AIProfileCard: React.FC<AIWithEarnings> = ({
             </span>
           </div>
         </div>
-        <button
-          onClick={handleEditClick}
-          className="bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 transition"
-        >
-          Edit
-        </button>
       </div>
       <p className="text-sm text-gray-600 mb-4">{introductions}</p>
       <div className="border-t pt-4">
@@ -146,6 +155,26 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleDeleteAI = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this AI?")) {
+      try {
+        const response = await fetch(`http://52.87.64.91:8000/ai/${id}`, {
+          method: "DELETE",
+        });
+
+        if (response.ok) {
+          setMyAIs((prevAIs) => prevAIs.filter((ai) => ai.id !== id));
+          alert("AI deleted successfully");
+        } else {
+          throw new Error("Failed to delete AI");
+        }
+      } catch (error) {
+        console.error("Error deleting AI:", error);
+        alert("Failed to delete AI. Please try again.");
+      }
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       <h1 className="text-2xl font-bold mb-4">Settings</h1>
@@ -160,7 +189,13 @@ const SettingsPage: React.FC = () => {
         {!isLoading && !error && (
           <div className="space-y-4">
             {myAIs.length > 0 ? (
-              myAIs.map((ai) => <AIProfileCard key={ai.id} {...ai} />)
+              myAIs.map((ai) => (
+                <AIProfileCard
+                  key={ai.id}
+                  {...ai}
+                  onDelete={() => handleDeleteAI(ai.id)}
+                />
+              ))
             ) : (
               <p>No AI profiles found.</p>
             )}

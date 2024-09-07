@@ -12,6 +12,7 @@
     "@web3auth/base": "^8.12.4",
     "@web3auth/ethereum-provider": "^8.12.4",
     "@web3auth/modal": "^8.12.7",
+    "near-api-js": "^4.0.4",
     "next": "14.2.7",
     "react": "^18",
     "react-dom": "^18",
