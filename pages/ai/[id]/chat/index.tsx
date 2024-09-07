@@ -52,6 +52,7 @@ const AIChat: React.FC = () => {
     if (chatid) {
       fetchChatHistory();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatid]);
 
   const scrollToBottom = () => {

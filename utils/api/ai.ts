@@ -51,3 +51,10 @@ export async function createAI(aiData: {
   return await response.json();
 }
 
+export async function fetchMyAIs(userid: string) {
+  const response = await fetch(`${API_BASE_URL}/ai/myais/${userid}`);
+  if (!response.ok) {
+    throw new Error("Network response was not ok");
+  }
+  return await response.json();
+}
